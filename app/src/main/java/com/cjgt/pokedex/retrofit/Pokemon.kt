@@ -1,65 +1,32 @@
-import com.squareup.moshi.JsonClass
+import com.google.gson.annotations.SerializedName
 
-@JsonClass(generateAdapter = true)
-data class Pokemon(
-    val id: Int,
-    val name: String,
-    val baseExperience: Int,
-    val height: Int,
-    val weight: Int,
-    val types: List<PokemonType>,
-    val abilities: List<PokemonAbility>,
-    val moves: List<PokemonMove>,
-    val sprites: PokemonSprites
+class Pokemon {
+    @SerializedName("id")
+    var id: Int = 0
+
+    @SerializedName("name")
+    var name: String = ""
+
+    @SerializedName("types")
+    var types: List<Type> = emptyList()
+
+    @SerializedName("sprites")
+    var sprites: Sprites = Sprites("")
+}
+
+data class Sprites(
+    @SerializedName("front_default")
+    val frontDefault: String
 )
 
-@JsonClass(generateAdapter = true)
-data class PokemonType(
-    val slot: Int,
-    val type: Type
-)
-
-@JsonClass(generateAdapter = true)
 data class Type(
+    @SerializedName("slot")
+    val slot: Int,
+    @SerializedName("type")
+    val type: TypeInfo
+)
+
+data class TypeInfo(
+    @SerializedName("name")
     val name: String
-)
-
-@JsonClass(generateAdapter = true)
-data class PokemonAbility(
-    val ability: Ability,
-    val isHidden: Boolean,
-    val slot: Int
-)
-
-@JsonClass(generateAdapter = true)
-data class Ability(
-    val name: String
-)
-
-@JsonClass(generateAdapter = true)
-data class PokemonMove(
-    val move: Move,
-    val versionGroupDetails: List<VersionGroupDetail>
-)
-
-@JsonClass(generateAdapter = true)
-data class Move(
-    val name: String
-)
-
-@JsonClass(generateAdapter = true)
-data class VersionGroupDetail(
-    val levelLearnedAt: Int,
-    val versionGroup: VersionGroup
-)
-
-@JsonClass(generateAdapter = true)
-data class VersionGroup(
-    val name: String
-)
-
-@JsonClass(generateAdapter = true)
-data class PokemonSprites(
-    val frontDefault: String?,
-    val backDefault: String?
 )
