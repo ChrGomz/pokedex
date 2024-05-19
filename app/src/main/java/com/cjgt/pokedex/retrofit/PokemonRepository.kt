@@ -1,19 +1,27 @@
 package com.cjgt.pokedex.retrofit
 
-import Pokemon
 import android.util.Log
+import com.cjgt.pokedex.roomDB.PokemonDao
 import com.cjgt.pokedex.retrofit.RetrofitClient.retrofitInstance
 
 
-class PokemonRepository {
+class PokemonRepository(private val pokemonDao: PokemonDao) {
     private val pokemonApiService: PokemonApiService = retrofitInstance!!.create(
         PokemonApiService::class.java
     )
 
     suspend fun getPokemonById(id: Int): Pokemon? {
+        val localPokemon = pokemonDao.getPokemonById(id)
+        if (localPokemon != null) {
+            return localPokemon
+        }
         return try {
             val response = pokemonApiService.getPokemonById(id)
-            if (response.isSuccessful) response.body() else null
+            if (response.isSuccessful) {
+                val pokemon = response.body()
+                pokemon?.let { pokemonDao.insertPokemon(it) }
+                pokemon
+            } else null
         } catch (e: Exception) {
             Log.e("API Error", e.message ?: "Unknown error")
             null
@@ -41,9 +49,22 @@ class PokemonRepository {
     }
 
     suspend fun getPokemonByUrl(url: String): Pokemon? {
+        val id = url.split("/").last { it.isNotEmpty() }.toInt()
+
+        val localPokemon = pokemonDao.getPokemonById(id)
+        if (localPokemon != null) {
+            //Log.v("CHRIS_DEBUG", "pokemon $id fetched from roomDB")
+            return localPokemon
+        }
+        //Log.v("CHRIS_DEBUG", "pokemon $id fetched from API")
+
         return try {
             val response = pokemonApiService.getPokemonByUrl(url)
-            if (response.isSuccessful) response.body() else null
+            if (response.isSuccessful) {
+                val pokemon = response.body()
+                pokemon?.let { pokemonDao.insertPokemon(it) }
+                pokemon
+            } else null
         } catch (e: Exception) {
             Log.e("API Error", e.message ?: "Unknown error")
             null

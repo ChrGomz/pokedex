@@ -1,22 +1,31 @@
-import com.google.gson.annotations.SerializedName
+package com.cjgt.pokedex.retrofit
 
-class Pokemon {
+import com.google.gson.annotations.SerializedName
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity
+data class Pokemon (
+    @PrimaryKey
     @SerializedName("id")
-    var id: Int = 0
+    var id: Int = 0,
 
     @SerializedName("name")
-    var name: String = ""
+    var name: String = "",
 
     @SerializedName("types")
-    var types: List<Type> = emptyList()
+    var types: List<Type> = emptyList(),
 
     @SerializedName("sprites")
-    var sprites: Sprites = Sprites("")
-}
+    var sprites: Sprites = Sprites(""),
+
+    @SerializedName("stats")
+    var stats: List<Stat> = emptyList()
+)
 
 data class Sprites(
     @SerializedName("front_default")
-    val frontDefault: String
+    var frontDefault: String?
 )
 
 data class Type(
@@ -27,6 +36,19 @@ data class Type(
 )
 
 data class TypeInfo(
+    @SerializedName("name")
+    val name: String
+)
+
+data class Stat(
+    @SerializedName("base_stat")
+    val baseStat: Int,
+
+    @SerializedName("stat")
+    val statInfo: StatInfo
+)
+
+data class StatInfo(
     @SerializedName("name")
     val name: String
 )
