@@ -14,6 +14,7 @@ firebaseAuthKtx = "22.3.1"
 volley = "1.2.1"
 roomCommon = "2.6.1"
 roomKtx = "2.6.1"
+firebaseCrashlyticsKtx = "19.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -36,6 +37,7 @@ firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx",
 volley = { group = "com.android.volley", name = "volley", version.ref = "volley" }
 androidx-room-common = { group = "androidx.room", name = "room-common", version.ref = "roomCommon" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
+firebase-crashlytics-ktx = { group = "com.google.firebase", name = "firebase-crashlytics-ktx", version.ref = "firebaseCrashlyticsKtx" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

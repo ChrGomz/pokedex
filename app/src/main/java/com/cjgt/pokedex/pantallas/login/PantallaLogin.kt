@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,13 +28,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import com.cjgt.pokedex.SharedPrefHandler
+import com.cjgt.pokedex.pantallas.router.Rutas
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun PantallaLogin(navController: NavController) {
+fun PantallaLogin(navController: NavController, sharedPrefHandler: SharedPrefHandler) {
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -49,16 +47,22 @@ fun PantallaLogin(navController: NavController) {
             .background(MaterialTheme.colorScheme.surface)
             .padding(16.dp)
     ) {
-        if (isLogin.value) ContenidoLogin(model = loginViewModel, navController)
-        else ContenidoSingIn(loginModel = loginViewModel, navController)
+        if (isLogin.value) ContenidoLogin(model = loginViewModel, navController, sharedPrefHandler)
+        else ContenidoSingIn(loginModel = loginViewModel, navController, sharedPrefHandler)
     }
 }
 
 @Composable
-fun ContenidoLogin(model: LoginViewModel, navController: NavController) {
-    val scope = rememberCoroutineScope()
+fun ContenidoLogin(
+    model: LoginViewModel,
+    navController: NavController,
+    sharedPrefHandler: SharedPrefHandler
+) {
+    rememberCoroutineScope()
     val errorText = model.errorText.collectAsState()
 
+    model.setEmail("correo@correo.es")
+    model.setPassword("123456789")
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -72,7 +76,7 @@ fun ContenidoLogin(model: LoginViewModel, navController: NavController) {
         }
         item {
             EntradaEmail(viewModel = model)
-            EntradaContrasenya(model = model, navController)
+            EntradaContrasenya(model = model, navController, sharedPrefHandler)
             Text(
                 text = AnnotatedString(errorText.value), color = Color.Red, fontSize = 16.sp
             )
@@ -80,7 +84,8 @@ fun ContenidoLogin(model: LoginViewModel, navController: NavController) {
             BotonEnviarFormulario(onClick = {
                 if (model.isAllFieldFilled("login")) {
                     loginUser(model.getEmail(), model.getPassword(), onConfirm = {
-                        navController.navigate("pantallainicio")
+                        navController.navigate(Rutas.PantallaInicio.ruta)
+                        sharedPrefHandler.setLoggedIn(true)
                     }, onError = {
                         model.setErrorText("Correo o contraseña erronea")
                     })
@@ -102,10 +107,8 @@ fun ContenidoLogin(model: LoginViewModel, navController: NavController) {
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ContenidoSingIn(
-    loginModel: LoginViewModel, navController: NavController
+    loginModel: LoginViewModel, navController: NavController, sharedPrefHandler: SharedPrefHandler
 ) {
-    val scope = rememberCoroutineScope()
-
     val errorText = loginModel.errorText.collectAsState()
     val keyboardController = loginModel.keyboardController.collectAsState()
 
@@ -125,10 +128,7 @@ fun ContenidoSingIn(
             EntradaEmail(viewModel = loginModel)
             RegistrarContrasenya(model = loginModel) {
                 signInAction(
-                    loginModel,
-                    navController,
-                    scope,
-                    keyboardController.value!!
+                    loginModel, navController, keyboardController.value!!, sharedPrefHandler
                 )
             }
             Text(
@@ -138,10 +138,7 @@ fun ContenidoSingIn(
             BotonEnviarFormulario(
                 onClick = {
                     signInAction(
-                        loginModel,
-                        navController,
-                        scope,
-                        keyboardController.value!!
+                        loginModel, navController, keyboardController.value!!, sharedPrefHandler
                     )
                 }, "Registrarse"
             )
@@ -155,23 +152,20 @@ fun ContenidoSingIn(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 fun signInAction(
     loginModel: LoginViewModel,
     navController: NavController,
-    scope: CoroutineScope,
-    keyboardController: SoftwareKeyboardController
+    keyboardController: SoftwareKeyboardController,
+    sharedPrefHandler: SharedPrefHandler
 ) {
     if (loginModel.isAllFieldFilled("sigin")) {
         if (loginModel.isContrasenyaConfirmed()) {
-            registerUser(
-                email = loginModel.getEmail(),
+            registerUser(email = loginModel.getEmail(),
                 password = loginModel.getPassword(),
                 onConfirm = {
                     keyboardController.hide()
-                    scope.launch {
-                        navController.navigate("pantallaAutoRegistro")
-                    }
+                    navController.navigate(Rutas.PantallaInicio.ruta)
+                    sharedPrefHandler.setLoggedIn(true)
                 },
                 onError = {
                     keyboardController.hide()

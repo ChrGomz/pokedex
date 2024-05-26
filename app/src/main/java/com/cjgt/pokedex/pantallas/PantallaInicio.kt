@@ -10,6 +10,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -25,16 +28,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.ImageLoader
-import com.cjgt.pokedex.retrofit.Pokemon
-import com.cjgt.pokedex.retrofit.PokemonListItem
-import com.cjgt.pokedex.retrofit.PokemonRepository
-import com.cjgt.pokedex.retrofit.TypeColors
-import com.cjgt.pokedex.roomDB.LocalPokemonDB
+import com.cjgt.pokedex.retrofit.pokeApi.Pokemon
+import com.cjgt.pokedex.retrofit.pokeApi.PokemonListItem
+import com.cjgt.pokedex.retrofit.pokeApi.PokemonRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -46,34 +46,26 @@ fun PantallaInicio(pokemonRepository: PokemonRepository, imageLoader: ImageLoade
 
     LaunchedEffect(key1 = true) {
         withContext(Dispatchers.IO) {
-            val pokemonListData = fetchPokemonList(pokemonRepository)
+            val pokemonListData = fetchPokemonList(pokemonRepository, 1302)
             val fetchedPokemonList = fetchPokemonDetails(pokemonRepository, pokemonListData)
             pokemonList = fetchedPokemonList
         }
     }
 
-    pokemonList?.sortedBy { it.id }?.chunked(2)?.let { chunkedList ->
-        LazyColumn {
-            itemsIndexed(chunkedList) { _, pair ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
-                ) {
-                    pair.forEach { pokemon ->
-                        val cardModifier = Modifier
-                            .weight(1f)
-                            .padding(8.dp)
-                            .clickable { onPokemonSelected(pokemon) }
-                        PokemonCard(pokemon, imageLoader, cardModifier)
-                    }
-                }
+    pokemonList?.sortedBy { it.id }?.let { sortedList ->
+        LazyVerticalGrid(columns = GridCells.Adaptive(minSize = 160.dp)){
+            items(sortedList) {  pokemon ->
+                PokemonCard(pokemon, imageLoader, Modifier.padding(8.dp).fillMaxWidth().clickable {
+                    onPokemonSelected(pokemon)
+                })
             }
         }
     }
 }
 
-suspend fun fetchPokemonList(pokemonRepository: PokemonRepository): List<PokemonListItem>? {
+suspend fun fetchPokemonList(pokemonRepository: PokemonRepository, limit: Int): List<PokemonListItem>? {
     return try {
-        pokemonRepository.getAllPokemon(20, "id")
+        pokemonRepository.getAllPokemon(limit, "id")
     } catch (e: Exception) {
         Log.e("API Error", e.message ?: "Unknown error")
         null

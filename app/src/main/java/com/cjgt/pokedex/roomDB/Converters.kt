@@ -1,9 +1,9 @@
 package com.cjgt.pokedex.roomDB
 
 import androidx.room.TypeConverter
-import com.cjgt.pokedex.retrofit.Sprites
-import com.cjgt.pokedex.retrofit.Stat
-import com.cjgt.pokedex.retrofit.Type
+import com.cjgt.pokedex.retrofit.pokeApi.Sprites
+import com.cjgt.pokedex.retrofit.pokeApi.Stat
+import com.cjgt.pokedex.retrofit.pokeApi.Type
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 

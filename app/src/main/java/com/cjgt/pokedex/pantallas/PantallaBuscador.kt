@@ -27,8 +27,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
-import com.cjgt.pokedex.retrofit.Pokemon
-import com.cjgt.pokedex.retrofit.TypeColors
+import com.cjgt.pokedex.retrofit.pokeApi.Pokemon
 
 @Composable
 fun PantallaBuscador(
@@ -60,13 +59,15 @@ fun PantallaBuscador(
 
         LazyColumn {
             items(filteredList ?: listOf()) { pokemon ->
-                var pokemonColor = Color.Transparent
+                var pokemonColor: Color
                 pokemon.types[0].type.name.let {
                     pokemonColor = Color(TypeColors.getColorForType(it)).copy(alpha = 0.7f)
                 }
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.background(pokemonColor)
+                    modifier = Modifier
+                        .background(pokemonColor)
+                        .clickable { onPokemonSelected(pokemon) }
                 ) {
                     Spacer(modifier = Modifier.padding(16.dp))
                     SpritePhoto(50, pokemon, imageLoader)
@@ -74,7 +75,6 @@ fun PantallaBuscador(
                         Text(text = pokemon.name,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { onPokemonSelected(pokemon) }
                                 .padding(start = 16.dp))
 
                     }

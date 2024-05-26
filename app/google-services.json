@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "756884433451",
+    "project_id": "pokedex-1630f",
+    "storage_bucket": "pokedex-1630f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:756884433451:android:38e39277b00196e3b3186e",
+        "android_client_info": {
+          "package_name": "com.cjgt.pokedex"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhT_029PcHS3Jz_jzyoZo92e-cvAsV2Ws"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

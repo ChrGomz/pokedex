@@ -1,6 +1,9 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    id("com.google.gms.google-services")
+    id("com.google.firebase.firebase-perf")
+    id("com.google.firebase.crashlytics")
     id("kotlin-kapt")
 }
 
@@ -22,8 +25,25 @@ android {
     }
 
     buildTypes {
-        release {
+        debug {
             isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+        signingConfigs {
+            create("release") {
+                storeFile = file("my-release-key.jks")
+                storePassword = "password"
+                keyAlias = "my-alias"
+                keyPassword = "password"
+            }
+        }
+        release {
+            isMinifyEnabled = true
+            signingConfig = signingConfigs["release"]
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -63,6 +83,7 @@ dependencies {
     implementation(libs.firebase.auth.ktx)
 
     implementation("androidx.room:room-ktx:2.6.1")
+    implementation(libs.firebase.crashlytics.ktx)
     kapt("androidx.room:room-compiler:2.6.1")
 
     testImplementation(libs.junit)
@@ -81,5 +102,12 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
     implementation("com.google.accompanist:accompanist-pager:0.20.0")
+
+    //firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation(libs.firebase.auth.ktx)
+    implementation("com.google.firebase:firebase-perf")
+    implementation("com.google.firebase:firebase-crashlytics")
 
 }

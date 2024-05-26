@@ -33,11 +33,13 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.cjgt.pokedex.R
+import com.cjgt.pokedex.SharedPrefHandler
+import com.cjgt.pokedex.pantallas.router.Rutas
 
 
 @Composable
 fun Logo() {
-    Image(painter = painterResource(id = R.drawable.ic_launcher_background),
+    Image(painter = painterResource(id = R.drawable.logo),
         contentDescription = "Logo",
         modifier = Modifier
             .size(200.dp)
@@ -49,7 +51,7 @@ fun Logo() {
 @Composable
 fun TextoTitulo(size: TextUnit = 42.sp) {
     Text(
-        text = AnnotatedString("Mi Reserva"),
+        text = AnnotatedString("Pokedex"),
         fontSize = size,
         fontFamily = FontFamily.Monospace,
         fontWeight = FontWeight.Bold,
@@ -105,7 +107,11 @@ fun EntradaEmail(viewModel: LoginViewModel) {
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun EntradaContrasenya(model: LoginViewModel, navController: NavController?) {
+fun EntradaContrasenya(
+    model: LoginViewModel,
+    navController: NavController,
+    sharedPrefHandler: SharedPrefHandler
+) {
 
     val password = model.password.collectAsState()
     val keyboardController = model.keyboardController.collectAsState()
@@ -123,8 +129,9 @@ fun EntradaContrasenya(model: LoginViewModel, navController: NavController?) {
         ),
         keyboardActions = KeyboardActions(onDone = {
             loginUser(model.getEmail(), model.getPassword(), onConfirm = {
+                sharedPrefHandler.setLoggedIn(true)
                 keyboardController.value?.hide()
-                navController?.navigate("testing")
+                navController.navigate(Rutas.PantallaInicio.ruta)
             }, onError = {
                 keyboardController.value?.hide()
                 model.setErrorText("Correo o contraseña erroneos")

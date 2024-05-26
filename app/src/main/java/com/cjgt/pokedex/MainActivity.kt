@@ -6,15 +6,22 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.cjgt.pokedex.pantallas.Router
+import com.cjgt.pokedex.pantallas.router.Router
 import com.cjgt.pokedex.ui.theme.PokedexTheme
+import com.google.firebase.Firebase
+import com.google.firebase.analytics.analytics
+import com.google.firebase.perf.FirebasePerformance
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Firebase analytics
+        Firebase.analytics.setAnalyticsCollectionEnabled(true)
+        // Firebase Performance Monitoring
+        FirebasePerformance.getInstance().isPerformanceCollectionEnabled = true
+        // SharedPrefHandler
+        val sharedPrefHandler = SharedPrefHandler(this)
+
         super.onCreate(savedInstanceState)
         setContent {
             PokedexTheme {
@@ -22,7 +29,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Router()
+                    Router(sharedPrefHandler)
                 }
             }
         }
